@@ -355,16 +355,16 @@
         .sp-left-subtitle{
             font-size:18px;
             color:var(--sp-accent);
-            margin-bottom:20px
+            margin-bottom:20px;
         }
         .sp-left-text{
             font-size:16px;
-            color:var(--sp-muted)
+            color:var(--sp-muted);
         }
         .sp-right{
             display:flex;
             flex-direction:column;
-            gap:20px
+            gap:20px;
         }
         .sp-audio-box{
             background:rgba(255,255,255,0.05);
@@ -372,7 +372,8 @@
             padding:16px;
             display:flex;
             flex-direction:column;
-            gap:10px
+            gap:10px;
+            text-align: center;
         }
         .sp-audio-play-btn{
             background:var(--sp-accent);
@@ -386,15 +387,25 @@
             align-items:center;
             gap:8px;
             justify-content:center;
-            transition:opacity .2s
+            transition:opacity .2s;
+            width: 100%;
         }
         .sp-audio-play-btn:hover{opacity:.8}
-        .sp-audio-controls-wrap{display:flex;align-items:center;gap:12px}
+        .sp-audio-play-btn.playing svg { animation: spin 2s linear infinite; }
+        .sp-audio-play-btn.playing { background-color: #82e0aa; }
+        .sp-audio-play-btn.paused { background-color: #f2a97e; }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .sp-audio-controls-wrap { display: none; } /* Ocultar los controles nativos */
         .sp-audio-controls-play{
             background:none;
             border:none;
             cursor:pointer;
-            color:var(--sp-accent)
+            color:var(--sp-accent);
         }
         .sp-audio-controls-play svg{width:28px;height:28px}
         .sp-audio-progress{
@@ -402,57 +413,57 @@
             height:6px;
             background:rgba(255,255,255,0.2);
             border-radius:3px;
-            cursor:pointer
+            cursor:pointer;
         }
         .sp-audio-progress-bar{
             height:100%;
             background:var(--sp-accent);
             border-radius:3px;
-            width:0
+            width:0;
         }
         .sp-audio-time{font-size:12px;color:var(--sp-muted)}
         .sp-resources{
             display:flex;
             flex-direction:column;
-            gap:8px
+            gap:8px;
         }
         .sp-resources-title{
             font-weight:bold;
             color:#fff;
-            font-size:16px
+            font-size:16px;
         }
         .sp-resources-list{
             display:flex;
             flex-direction:column;
-            gap:4px
+            gap:4px;
         }
         .sp-resources-list a{
             color:var(--sp-muted);
             text-decoration:none;
             font-size:14px;
-            transition:color .2s
+            transition:color .2s;
         }
         .sp-resources-list a:hover{
-            color:var(--sp-accent)
+            color:var(--sp-accent);
         }
         .sp-footer{
             margin-top:auto;
             font-size:12px;
             color:var(--sp-muted);
-            text-align:center
+            text-align:center;
         }
         .sp-footer span{color:var(--sp-accent)}
         @media(max-width:680px){
             .sp-card{
                 grid-template-columns:1fr;
                 padding:20px;
-                gap:25px
+                gap:25px;
             }
             .sp-left{
                 padding-right:0;
                 border-right:none;
                 padding-bottom:20px;
-                border-bottom:1px solid rgba(255,255,255,0.05)
+                border-bottom:1px solid rgba(255,255,255,0.05);
             }
             .sp-left-title { font-size: 24px; }
             .sp-left-subtitle { font-size: 16px; }
@@ -845,6 +856,11 @@
                 closeBtn.onclick = () => {
                     if (document.body.contains(overlay)) {
                         document.body.removeChild(overlay);
+                        // Stop audio on close
+                        if (audio) {
+                            audio.pause();
+                            audio.currentTime = 0;
+                        }
                     }
                 };
 
@@ -862,7 +878,20 @@
                 playBtn.className = 'sp-audio-play-btn';
                 playBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Reproducir audio`;
                 playBtn.onclick = () => {
-                    audio.play();
+                    if (audio.paused) {
+                        audio.play();
+                        playBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Pausar audio`;
+                        playBtn.classList.add('playing');
+                    } else {
+                        audio.pause();
+                        playBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Reproducir audio`;
+                        playBtn.classList.remove('playing');
+                    }
+                };
+
+                audio.onended = () => {
+                    playBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Reproducir audio`;
+                    playBtn.classList.remove('playing');
                 };
 
                 const resourcesEl = document.createElement('div');
@@ -873,7 +902,6 @@
                 footer.className = 'sp-footer';
                 footer.innerHTML = `<span>Un mensaje de ayuda en el Día Mundial de Prevención del Suicidio.</span>`;
 
-                audioBox.appendChild(audio);
                 audioBox.appendChild(playBtn);
                 right.appendChild(audioBox);
                 right.appendChild(resourcesEl);

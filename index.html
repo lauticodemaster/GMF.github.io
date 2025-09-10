@@ -209,6 +209,24 @@
         .explanation strong {
             color: var(--color-text-light);
         }
+        
+        .grouping-step {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            font-family: var(--font-family-mono);
+            font-size: 1.2em;
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .grouping-step .group {
+            background-color: rgba(0,0,0,0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--color-accent-orange);
+        }
 
         /* --- Pie de Página --- */
         footer {
@@ -421,23 +439,36 @@
             runVisualization(input, sourceBase, targetBase) {
                 let decimalValue;
 
-                if (sourceBase !== 'decimal') {
-                    this.addExplanation(`<strong>Paso 1:</strong> Convertir de ${sourceBase} a decimal.`);
-                    this.addExplanation(`<strong>Explicación:</strong> Para pasar un número de cualquier base a decimal, se utiliza el **método de las potencias** (o expresión polinómica). El valor de cada dígito se determina multiplicándolo por la base elevada a la potencia de su posición, empezando desde 0 de derecha a izquierda. Luego, se suman todos los resultados.`);
-                    this.visualizeToDecimal(input, sourceBase);
-                    decimalValue = this.conversionLogic.toDecimal(input, this.getBaseNumber(sourceBase));
+                if (sourceBase === 'binary' && targetBase === 'octal') {
+                    this.addExplanation(`<strong>Método directo:</strong> de Binario a Octal agrupando de a 3 bits.`);
+                    this.visualizeGrouping(input, 3, targetBase);
+                } else if (sourceBase === 'binary' && targetBase === 'hex') {
+                    this.addExplanation(`<strong>Método directo:</strong> de Binario a Hexadecimal agrupando de a 4 bits.`);
+                    this.visualizeGrouping(input, 4, targetBase);
+                } else if (sourceBase === 'octal' && targetBase === 'binary') {
+                    this.addExplanation(`<strong>Método directo:</strong> de Octal a Binario. Cada dígito octal se convierte a su equivalente en 3 bits binarios.`);
+                    this.visualizeUngrouping(input, 3);
+                } else if (sourceBase === 'hex' && targetBase === 'binary') {
+                    this.addExplanation(`<strong>Método directo:</strong> de Hexadecimal a Binario. Cada dígito hexadecimal se convierte a su equivalente en 4 bits binarios.`);
+                    this.visualizeUngrouping(input, 4);
                 } else {
-                    decimalValue = parseInt(input, 10);
-                }
+                    if (sourceBase !== 'decimal') {
+                        this.addExplanation(`<strong>Paso 1:</strong> Convertir de ${sourceBase} a decimal.`);
+                        this.addExplanation(`<strong>Explicación:</strong> Para pasar un número de cualquier base a decimal, se usa el **método de las potencias** (o expresión polinómica). El valor de cada dígito se determina multiplicándolo por la base elevada a la potencia de su posición, empezando desde 0 de derecha a izquierda. Luego, se suman todos los resultados.`);
+                        this.visualizeToDecimal(input, sourceBase);
+                        decimalValue = this.conversionLogic.toDecimal(input, this.getBaseNumber(sourceBase));
+                    } else {
+                        decimalValue = parseInt(input, 10);
+                    }
 
-                if (targetBase !== 'decimal') {
-                    this.addExplanation(`<strong>Paso 2:</strong> Ahora convertimos el valor decimal (${decimalValue}) al sistema de ${targetBase}.`);
-                    this.addExplanation(`Para esto, usamos el **método de las divisiones sucesivas**. El procedimiento consiste en dividir el número decimal entre la base del nuevo sistema y tomar el residuo. El cociente se vuelve a dividir por la base y se repite el proceso hasta que el cociente sea 0. El resultado se forma con los residuos en orden inverso.`);
-                    this.addModuloExplanation();
-                    this.visualizeFromDecimal(decimalValue, targetBase);
+                    if (targetBase !== 'decimal') {
+                        this.addExplanation(`<strong>Paso 2:</strong> Ahora convertimos el valor decimal (${decimalValue}) al sistema de ${targetBase}.`);
+                        this.addExplanation(`Para esto, usamos el **método de las divisiones sucesivas**. El procedimiento consiste en dividir el número decimal entre la base del nuevo sistema y tomar el residuo. El cociente se vuelve a dividir por la base y se repite el proceso hasta que el cociente sea 0. El resultado se forma con los residuos en orden inverso.`);
+                        this.addModuloExplanation();
+                        this.visualizeFromDecimal(decimalValue, targetBase);
+                    }
                 }
-
-                const finalResult = this.conversionLogic.fromDecimal(decimalValue, this.getBaseNumber(targetBase));
+                const finalResult = this.conversionLogic.toDecimal(input, this.getBaseNumber(sourceBase)).toString(this.getBaseNumber(targetBase)).toUpperCase();
                 this.addResultBox(finalResult);
             }
             
@@ -501,6 +532,51 @@
                 }
             }
             
+            // Visualiza el método de agrupamiento (Binario a Octal/Hex)
+            visualizeGrouping(input, groupSize, targetBase) {
+                let paddedInput = input;
+                if (paddedInput.length % groupSize !== 0) {
+                    const padLength = groupSize - (paddedInput.length % groupSize);
+                    paddedInput = '0'.repeat(padLength) + paddedInput;
+                }
+
+                const groups = [];
+                for (let i = 0; i < paddedInput.length; i += groupSize) {
+                    const group = paddedInput.substring(i, i + groupSize);
+                    groups.push(group);
+                }
+
+                this.addExplanation(`Agrupamos los dígitos de derecha a izquierda en grupos de ${groupSize} bits. Si el primer grupo no está completo, le añadimos ceros a la izquierda.`);
+                this.addStepHTML(`<p class="grouping-step" style="animation-delay: ${this.delay}s">${groups.join(' ')}</p>`);
+                this.delay += 0.5;
+                
+                let result = '';
+                groups.forEach(group => {
+                    const decimalValue = parseInt(group, 2);
+                    let convertedValue = decimalValue.toString(this.getBaseNumber(targetBase)).toUpperCase();
+                    result += convertedValue;
+                    this.addStepHTML(`<div class="grouping-step" style="animation-delay: ${this.delay}s"><span class="group">${group}</span> = <span class="result-part">${convertedValue}</span></div>`);
+                    this.delay += 0.4;
+                });
+            }
+            
+            // Visualiza el método de desagrupamiento (Octal/Hex a Binario)
+            visualizeUngrouping(input, groupSize) {
+                let result = '';
+                this.addExplanation(`Convertimos cada dígito del número de origen a su equivalente en ${groupSize} bits binarios.`);
+                
+                input.split('').forEach(digit => {
+                    const decimalValue = parseInt(digit, this.getBaseNumber(input));
+                    let binaryValue = decimalValue.toString(2);
+                    while (binaryValue.length < groupSize) {
+                        binaryValue = '0' + binaryValue;
+                    }
+                    result += binaryValue;
+                    this.addStepHTML(`<div class="grouping-step" style="animation-delay: ${this.delay}s"><span class="group">${digit}</span> = <span class="result-part">${binaryValue}</span></div>`);
+                    this.delay += 0.4;
+                });
+            }
+
             addModuloExplanation() {
                 const moduloExplanation = `
                     <div class="explanation">
@@ -541,6 +617,7 @@
             
             // Validaciones
             isValid(value, base) {
+                if (value === '') return true;
                 const patterns = {
                     'binary': /^[01]+$/,
                     'octal': /^[0-7]+$/,

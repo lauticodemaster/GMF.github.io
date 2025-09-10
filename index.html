@@ -295,6 +295,14 @@
                 font-size: 2em;
             }
         }
+        
+        .small-text {
+            font-size: 0.8em;
+            color: var(--color-text-faded);
+            margin-top: -10px;
+            max-width: 300px;
+            text-align: center;
+        }
 
         /* --- CSS DEL WIDGET DE PREVENCIÓN --- */
         :root{
@@ -313,6 +321,7 @@
             justify-content:center;
             z-index:99999;
         }
+        /* Estilos base para la tarjeta, se modifican por JS */
         .sp-card{
             width:min(880px,92%);
             max-width:980px;
@@ -345,7 +354,7 @@
             background:rgba(255,255,255,0.1);
         }
 
-        /* ESTILOS ESPECÍFICOS PARA PC */
+        /* ESTILOS ESCRITORIO */
         .sp-desktop .sp-content {
             display: flex;
             gap: 20px;
@@ -386,7 +395,7 @@
             text-align: center;
         }
 
-        /* ESTILOS ESPECÍFICOS PARA MÓVIL */
+        /* ESTILOS MÓVIL */
         .sp-mobile .sp-content {
             display: flex;
             flex-direction: column;
@@ -543,10 +552,8 @@
         
         <footer>
             <p>Creado por <span>Lautaro Fernández</span> con asistencia de IA para ayudar a aprender.</p>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="action-button" onclick="window._SP_WIDGET.create('desktop')">Versión PC</button>
-                <button class="action-button" onclick="window._SP_WIDGET.create('mobile')">Versión Móvil</button>
-            </div>
+            <button class="action-button" onclick="window._SP_WIDGET.create()">Mensaje de Prevención del Suicidio</button>
+            <p class="small-text">Si estás en Android y quieres ver la versión de escritorio, activa la 'Vista de ordenador' en las opciones de tu navegador.</p>
         </footer>
     </div>
 
@@ -859,9 +866,7 @@
                 { name: 'Red de Salud Mental Pública (CABA)', url: 'https://www.buenosaires.gob.ar/salud/salud-mental' },
             ];
 
-            function createBaseWidget(version) {
-                const cardClass = version === 'desktop' ? 'sp-desktop' : 'sp-mobile';
-                
+            function createBaseWidget(cardClass) {
                 const overlay = document.createElement('div');
                 overlay.className = 'sp-overlay';
 
@@ -955,9 +960,19 @@
                 };
             }
 
+            // Función principal para decidir qué interfaz cargar
+            function createSuicidePreventionWidget() {
+                const screenWidth = window.innerWidth;
+                if (screenWidth > 680) {
+                    createBaseWidget('sp-desktop');
+                } else {
+                    createBaseWidget('sp-mobile');
+                }
+            }
+
             if (!window._SP_WIDGET) window._SP_WIDGET = {};
-            window._SP_WIDGET.create = createBaseWidget;
-            window.createSuicidePreventionWidget = createBaseWidget;
+            window._SP_WIDGET.create = createSuicidePreventionWidget;
+            window.createSuicidePreventionWidget = createSuicidePreventionWidget;
         })();
     </script>
     

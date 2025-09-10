@@ -320,8 +320,8 @@
             border-radius:18px;
             padding:26px;
             box-shadow:0 10px 40px rgba(0,0,0,0.6);
-            display:grid;
-            grid-template-columns:1fr 340px;
+            display:flex;
+            flex-direction: column;
             gap:20px;
             position:relative;
             z-index: 100000;
@@ -344,29 +344,35 @@
         .sp-card-close:hover{
             background:rgba(255,255,255,0.1);
         }
+        .sp-content {
+            display: flex;
+            gap: 20px;
+        }
         .sp-left{
-            padding-right:0;
+            flex: 1;
         }
         .sp-left-title{
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-size: 2em;
             font-weight:bold;
             color:#fff;
             margin-bottom:12px;
             line-height: 1.3;
         }
         .sp-left-subtitle{
-            font-size: clamp(1rem, 2.5vw, 1.125rem);
+            font-size: 1.1em;
             color:var(--sp-accent);
             margin-bottom:20px;
         }
         .sp-left-text{
-            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            font-size: 1em;
             color:var(--sp-muted);
         }
         .sp-right{
             display:flex;
             flex-direction:column;
             gap:20px;
+            width: 340px;
+            flex-shrink: 0;
         }
         .sp-audio-box{
             background:rgba(255,255,255,0.05);
@@ -457,19 +463,20 @@
         .sp-footer span{color:var(--sp-accent)}
         @media(max-width:680px){
             .sp-card{
-                grid-template-columns:1fr;
+                flex-direction:column;
                 padding:20px;
                 gap:25px;
             }
+            .sp-content {
+                flex-direction: column;
+            }
             .sp-left{
-                padding-right:0;
-                border-right:none;
                 padding-bottom:20px;
                 border-bottom:1px solid rgba(255,255,255,0.05);
             }
-            .sp-left-title { font-size: 24px; }
-            .sp-left-subtitle { font-size: 16px; }
-            .sp-left-text { font-size: 14px; }
+            .sp-right {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -731,7 +738,7 @@
                 groups.forEach(group => {
                     const decimalValue = parseInt(group, 2);
                     let convertedValue = decimalValue.toString(this.getBaseNumber(targetBase)).toUpperCase();
-                    this.addStepHTML(`<div class="grouping-step" style="animation-delay: ${this.delay}s"><span class="group">${group}</span> = <span class="result-part">${binaryValue}</span></div>`);
+                    this.addStepHTML(`<div class="grouping-step" style="animation-delay: ${this.delay}s"><span class="group">${group}</span> = <span class="result-part">${convertedValue}</span></div>`);
                     this.delay += 0.4;
                 });
             }
@@ -824,8 +831,6 @@
     <script>
         (function(){
             function createSuicidePreventionWidget(target, options = {}) {
-                const isMobile = window.innerWidth <= 680;
-                
                 const customText = `
                     <h2 class="sp-left-title">A veces la vida duele más de lo que creemos soportar, y es normal sentirse perdido. Pero aunque las sombras parezcan eternas, tu existencia tiene un valor que nadie más puede reemplazar.</h2>
                     <p class="sp-left-subtitle">Recordá que pedir ayuda no es un signo de debilidad, sino un acto de coraje. Hay personas dispuestas a escucharte, a acompañarte y a cuidarte, incluso cuando parece que nadie está ahí.</p>
@@ -865,6 +870,9 @@
                         }
                     }
                 };
+
+                const contentContainer = document.createElement('div');
+                contentContainer.className = 'sp-content';
 
                 const left = document.createElement('div');
                 left.className = 'sp-left';
@@ -909,9 +917,10 @@
                 right.appendChild(resourcesEl);
                 right.appendChild(footer);
 
+                contentContainer.appendChild(left);
+                contentContainer.appendChild(right);
                 card.appendChild(closeBtn);
-                card.appendChild(left);
-                card.appendChild(right);
+                card.appendChild(contentContainer);
 
                 overlay.appendChild(card);
                 document.body.appendChild(overlay);

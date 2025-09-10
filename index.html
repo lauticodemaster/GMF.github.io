@@ -313,7 +313,6 @@
             justify-content:center;
             z-index:99999;
         }
-        /* Estilos base para la tarjeta, se modifican por JS */
         .sp-card{
             width:min(880px,92%);
             max-width:980px;
@@ -346,7 +345,7 @@
             background:rgba(255,255,255,0.1);
         }
 
-        /* ESTILOS ESCRITORIO */
+        /* ESTILOS ESPECÍFICOS PARA PC */
         .sp-desktop .sp-content {
             display: flex;
             gap: 20px;
@@ -387,7 +386,7 @@
             text-align: center;
         }
 
-        /* ESTILOS MÓVIL */
+        /* ESTILOS ESPECÍFICOS PARA MÓVIL */
         .sp-mobile .sp-content {
             display: flex;
             flex-direction: column;
@@ -544,7 +543,10 @@
         
         <footer>
             <p>Creado por <span>Lautaro Fernández</span> con asistencia de IA para ayudar a aprender.</p>
-            <button class="action-button" onclick="window._SP_WIDGET.create('body')">Mensaje de Prevención del Suicidio</button>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="action-button" onclick="window._SP_WIDGET.create('desktop')">Versión PC</button>
+                <button class="action-button" onclick="window._SP_WIDGET.create('mobile')">Versión Móvil</button>
+            </div>
         </footer>
     </div>
 
@@ -857,7 +859,9 @@
                 { name: 'Red de Salud Mental Pública (CABA)', url: 'https://www.buenosaires.gob.ar/salud/salud-mental' },
             ];
 
-            function createBaseWidget(cardClass) {
+            function createBaseWidget(version) {
+                const cardClass = version === 'desktop' ? 'sp-desktop' : 'sp-mobile';
+                
                 const overlay = document.createElement('div');
                 overlay.className = 'sp-overlay';
 
@@ -951,19 +955,9 @@
                 };
             }
 
-            // Función principal para decidir qué interfaz cargar
-            function createSuicidePreventionWidget() {
-                const screenWidth = window.innerWidth;
-                if (screenWidth > 680) {
-                    createBaseWidget('sp-desktop');
-                } else {
-                    createBaseWidget('sp-mobile');
-                }
-            }
-
             if (!window._SP_WIDGET) window._SP_WIDGET = {};
-            window._SP_WIDGET.create = createSuicidePreventionWidget;
-            window.createSuicidePreventionWidget = createSuicidePreventionWidget;
+            window._SP_WIDGET.create = createBaseWidget;
+            window.createSuicidePreventionWidget = createBaseWidget;
         })();
     </script>
     

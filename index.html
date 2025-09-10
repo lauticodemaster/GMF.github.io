@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Sistemas Numéricos</title>
+    
+    <style>
+        /* --- 1. CSS: Variables y Estilos Generales --- */
+        :root {
+            --color-bg-dark: #1a1a2e;
+            --color-bg-card: #162447;
+            --color-text-light: #e0e0e0;
+            --color-text-faded: #a0a0c0;
+            --color-accent-mint: #9bf0e1;
+            --color-accent-orange: #f2a97e;
+            --color-accent-green: #82e0aa;
+            --color-accent-red: #e45a8a;
+            --color-border: #4a4a70;
+            --font-family-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-family-mono: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            min-height: 100vh;
+            margin: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* --- Encabezado --- */
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 15px;
+        }
+
+        header h1 {
+            color: var(--color-accent-mint);
+            margin: 0;
+            font-size: 2.2em;
+        }
+        
+        header p {
+            color: var(--color-text-faded);
+            font-size: 1.1em;
+        }
+
+        /* --- Tarjeta de Controles --- */
+        .controls-card {
+            background-color: var(--color-bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--color-border);
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .controls-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls-group label {
+            font-size: 1.1em;
+            color: var(--color-text-faded);
+            font-weight: 500;
+        }
+        
+        .controls-group select,
+        .controls-group input {
+            padding: 10px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            border: 2px solid var(--color-border);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            font-weight: bold;
+            text-align: center;
+            width: 150px;
+            appearance: none;
+        }
+
+        .controls-group select:focus,
+        .controls-group input:focus {
+            outline: none;
+            border-color: var(--color-accent-mint);
+            box-shadow: 0 0 8px rgba(155, 240, 225, 0.5);
+        }
+
+        #input-value {
+            width: 200px;
+            text-transform: uppercase;
+        }
+
+        /* --- Contenedor de la Visualización --- */
+        #visualization-container {
+            background-color: var(--color-bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--color-border);
+            min-height: 200px;
+        }
+        
+        #visualization-container h2 {
+            margin-top: 0;
+            color: var(--color-accent-mint);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        /* --- Estilos de los Pasos --- */
+        .step {
+            font-size: 1.4em;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px auto;
+            max-width: 500px;
+            background-color: rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .step .number { color: var(--color-accent-orange); font-weight: bold; }
+        .step .result-part { color: var(--color-accent-green); font-weight: bold; }
+        .step .op-label { margin: 0 10px; color: var(--color-text-faded); }
+        .step .remainder {
+            background-color: var(--color-accent-red);
+            color: var(--color-text-light);
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--color-accent-red);
+            transform: scale(1.1);
+        }
+        
+        .result-box {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            animation: fadeIn 1s ease forwards;
+            opacity: 0;
+        }
+        
+        .result-box p {
+            font-size: 1.2em;
+            color: var(--color-text-faded);
+            margin: 0 0 15px 0;
+        }
+        
+        .final-result {
+            font-family: var(--font-family-mono);
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--color-accent-green);
+            letter-spacing: 2px;
+            padding: 10px;
+            border: 2px dashed var(--color-border);
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .info-text {
+            color: var(--color-text-faded);
+            text-align: center;
+            font-size: 1.2em;
+        }
+        
+        .error-text {
+            color: var(--color-accent-red);
+            font-weight: bold;
+        }
+        
+        .explanation {
+            font-size: 1em;
+            color: var(--color-text-faded);
+            padding: 10px;
+            background-color: rgba(0,0,0,0.2);
+            border-left: 3px solid var(--color-accent-mint);
+            margin-top: 20px;
+        }
+        
+        .explanation strong {
+            color: var(--color-text-light);
+        }
+
+        /* --- Pie de Página --- */
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--color-text-faded);
+        }
+        
+        footer p {
+            margin: 0;
+        }
+        
+        footer span {
+            color: var(--color-accent-mint);
+            font-weight: bold;
+        }
+
+        /* --- Animación --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Media Queries para la Responsividad --- */
+        @media (max-width: 768px) {
+            .controls-card {
+                flex-direction: column;
+                gap: 30px;
+            }
+            .controls-group select,
+            .controls-group input {
+                width: 100%;
+                max-width: 250px;
+            }
+            .container {
+                padding: 15px;
+            }
+            header h1 {
+                font-size: 1.8em;
+            }
+            header p {
+                font-size: 1em;
+            }
+            #visualization-container {
+                padding: 20px;
+            }
+            .step {
+                font-size: 1.2em;
+            }
+            .final-result {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Conversor de Sistemas Numéricos</h1>
+            <p>Una herramienta interactiva y visual para entender el proceso de conversión.</p>
+        </header>
+
+        <div class="controls-card">
+            <div class="controls-group">
+                <label for="source-base">De:</label>
+                <select id="source-base">
+                    <option value="decimal">Decimal (10)</option>
+                    <option value="binary">Binario (2)</option>
+                    <option value="octal">Octal (8)</option>
+                    <option value="hex">Hexadecimal (16)</option>
+                </select>
+            </div>
+            
+            <div class="controls-group">
+                <label for="input-value">Ingresa un valor:</label>
+                <input type="text" id="input-value" placeholder="Ej: 13">
+            </div>
+
+            <div class="controls-group">
+                <label for="target-base">A:</label>
+                <select id="target-base">
+                    <option value="binary">Binario (2)</option>
+                    <option value="octal">Octal (8)</option>
+                    <option value="hex">Hexadecimal (16)</option>
+                    <option value="decimal">Decimal (10)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="visualization-container">
+            <h2 id="visualization-title">Visualizador Paso a Paso</h2>
+            <div id="steps-wrapper">
+                <p class="info-text">Selecciona los sistemas de conversión y escribe un valor.</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Creado por <span>Lautaro Fernández</span> con asistencia de IA para ayudar a aprender.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Clase para gestionar el estado de la aplicación
+        class StateManager {
+            constructor() {
+                this.state = {
+                    inputValue: '',
+                    sourceBase: 'decimal',
+                    targetBase: 'binary'
+                };
+                this.subscribers = [];
+            }
+
+            setState(newState) {
+                this.state = { ...this.state, ...newState };
+                this.notifySubscribers();
+            }
+
+            getState() {
+                return this.state;
+            }
+
+            subscribe(callback) {
+                this.subscribers.push(callback);
+            }
+
+            notifySubscribers() {
+                this.subscribers.forEach(callback => callback(this.state));
+            }
+        }
+
+        // Objeto que encapsula la lógica pura de conversión
+        const ConversionLogic = {
+            // Conversión de cualquier base a decimal
+            toDecimal(value, base) {
+                return parseInt(value, base);
+            },
+
+            // Conversión de decimal a cualquier otra base
+            fromDecimal(value, base) {
+                let result = '';
+                let tempValue = value;
+                const hexMap = '0123456789ABCDEF';
+
+                if (tempValue === 0) return '0';
+
+                while (tempValue > 0) {
+                    const remainder = tempValue % base;
+                    result = (base === 16 ? hexMap[remainder] : remainder) + result;
+                    tempValue = Math.floor(tempValue / base);
+                }
+                return result;
+            }
+        };
+
+        // Clase para gestionar la visualización y la interacción con el DOM
+        class VisualizationManager {
+            constructor(elements, stateManager) {
+                this.elements = elements;
+                this.stateManager = stateManager;
+                this.conversionLogic = ConversionLogic;
+                this.hexMap = { 10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F' };
+                this.delay = 0.2;
+            }
+
+            initialize() {
+                this.elements.sourceBase.addEventListener('change', () => this.handleInput());
+                this.elements.targetBase.addEventListener('change', () => this.handleInput());
+                this.elements.inputValue.addEventListener('input', () => this.handleInput());
+                this.stateManager.subscribe(state => this.updateView(state));
+            }
+
+            handleInput() {
+                this.stateManager.setState({
+                    inputValue: this.elements.inputValue.value.trim().toUpperCase(),
+                    sourceBase: this.elements.sourceBase.value,
+                    targetBase: this.elements.targetBase.value
+                });
+            }
+
+            updateView(state) {
+                const { inputValue, sourceBase, targetBase } = state;
+                this.elements.stepsWrapper.innerHTML = '';
+                this.delay = 0;
+
+                if (inputValue === '') {
+                    this.elements.vizTitle.textContent = "Visualizador Paso a Paso";
+                    this.elements.stepsWrapper.innerHTML = '<p class="info-text">Selecciona los sistemas de conversión y escribe un valor.</p>';
+                    return;
+                }
+                
+                if (sourceBase === targetBase) {
+                    this.elements.vizTitle.textContent = "¡Cuidado!";
+                    this.elements.stepsWrapper.innerHTML = `<p class="error-text">Los sistemas de origen y destino no pueden ser iguales.</p>`;
+                    return;
+                }
+
+                if (!this.isValid(inputValue, sourceBase)) {
+                    this.elements.vizTitle.textContent = "Error de Entrada";
+                    this.elements.stepsWrapper.innerHTML = `<p class="error-text">"${inputValue}" no es un valor válido para el sistema ${sourceBase}.</p>`;
+                    return;
+                }
+
+                this.elements.vizTitle.textContent = `Conversión de ${inputValue} (${sourceBase}) a ${targetBase}`;
+                this.runVisualization(inputValue, sourceBase, targetBase);
+            }
+            
+            runVisualization(input, sourceBase, targetBase) {
+                let decimalValue;
+
+                if (sourceBase !== 'decimal') {
+                    this.addExplanation(`<strong>Paso 1:</strong> Convertir de ${sourceBase} a decimal.`);
+                    this.addExplanation(`<strong>Explicación:</strong> Para pasar un número de cualquier base a decimal, se utiliza el **método de las potencias** (o expresión polinómica). El valor de cada dígito se determina multiplicándolo por la base elevada a la potencia de su posición, empezando desde 0 de derecha a izquierda. Luego, se suman todos los resultados.`);
+                    this.visualizeToDecimal(input, sourceBase);
+                    decimalValue = this.conversionLogic.toDecimal(input, this.getBaseNumber(sourceBase));
+                } else {
+                    decimalValue = parseInt(input, 10);
+                }
+
+                if (targetBase !== 'decimal') {
+                    this.addExplanation(`<strong>Paso 2:</strong> Ahora convertimos el valor decimal (${decimalValue}) al sistema de ${targetBase}.`);
+                    this.addExplanation(`Para esto, usamos el **método de las divisiones sucesivas**. El procedimiento consiste en dividir el número decimal entre la base del nuevo sistema y tomar el residuo. El cociente se vuelve a dividir por la base y se repite el proceso hasta que el cociente sea 0. El resultado se forma con los residuos en orden inverso.`);
+                    this.addModuloExplanation();
+                    this.visualizeFromDecimal(decimalValue, targetBase);
+                }
+
+                const finalResult = this.conversionLogic.fromDecimal(decimalValue, this.getBaseNumber(targetBase));
+                this.addResultBox(finalResult);
+            }
+            
+            // Visualiza la conversión de cualquier base a decimal (método de las potencias)
+            visualizeToDecimal(input, sourceBase) {
+                const baseNum = this.getBaseNumber(sourceBase);
+                const digits = input.split('').reverse();
+                let sum = 0;
+
+                this.addStepHTML(`
+                    <div class="explanation">
+                        <p>Aplicando la fórmula: <strong>(dígito × base<sup>posición</sup>)</strong></p>
+                    </div>
+                `);
+
+                digits.forEach((digit, index) => {
+                    const value = parseInt(digit, baseNum);
+                    const powerOfBase = Math.pow(baseNum, index);
+                    const term = value * powerOfBase;
+                    sum += term;
+                    
+                    const stepText = `(${digit} × ${baseNum}<sup>${index}</sup>) = ${term}`;
+                    this.addStepHTML(`<p class="step" style="animation-delay: ${this.delay}s">${stepText}</p>`);
+                    this.delay += 0.4;
+                });
+                
+                const finalSumHTML = `
+                    <div class="result-box" style="animation-delay: ${this.delay}s">
+                        <p>La suma total es:</p>
+                        <span class="final-result">${sum}</span>
+                    </div>
+                `;
+                this.addStepHTML(finalSumHTML);
+                this.delay += 0.5;
+            }
+
+            // Visualiza la conversión de decimal a cualquier base (método de divisiones sucesivas)
+            visualizeFromDecimal(number, targetBase) {
+                let currentNumber = number;
+                const base = this.getBaseNumber(targetBase);
+                const remainders = [];
+                
+                while (currentNumber > 0) {
+                    const remainder = currentNumber % base;
+                    const quotient = Math.floor(currentNumber / base);
+                    const formattedRemainder = (base === 16 && remainder >= 10) ? this.hexMap[remainder] : remainder;
+                    
+                    remainders.push(formattedRemainder);
+                    
+                    const stepHTML = `
+                        <div class="step" style="animation-delay: ${this.delay}s">
+                            <span class="number">${currentNumber}</span> ÷ ${base} = <span class="result-part">${quotient}</span>
+                            <span class="op-label">con resto:</span>
+                            <span class="remainder">${formattedRemainder}</span>
+                        </div>
+                    `;
+                    
+                    this.addStepHTML(stepHTML);
+                    currentNumber = quotient;
+                    this.delay += 0.4;
+                }
+            }
+            
+            addModuloExplanation() {
+                const moduloExplanation = `
+                    <div class="explanation">
+                        <h4>¿Cómo obtener el resto en una calculadora? 🤔</h4>
+                        <p>Para la conversión, necesitas el <strong>residuo (resto)</strong> de la división. Puedes calcularlo con la función <strong>Módulo</strong>. En tu calculadora, se ve como: <strong>MOD</strong>, <strong>rem</strong> o el símbolo <strong>%</strong> (depende del modelo).</p>
+                        <p><strong>Fórmula:</strong> <code>número % base</code></p>
+                        <p>Por ejemplo, si divides <strong>13 ÷ 2</strong>:</p>
+                        <ul>
+                            <li><strong>Cociente (resultado entero):</strong> 13 / 2 = 6</li>
+                            <li><strong>Residuo (resto):</strong> 13 % 2 = 1</li>
+                        </ul>
+                        <p>En el proceso de conversión, el <strong>cociente</strong> se usa para la siguiente división y el <strong>residuo</strong> es el dígito que guardas para el resultado.</p>
+                    </div>
+                `;
+                this.elements.stepsWrapper.innerHTML += moduloExplanation;
+                this.delay += 0.5;
+            }
+
+            // Métodos auxiliares para la visualización
+            addExplanation(html) {
+                this.elements.stepsWrapper.innerHTML += `<div class="explanation" style="animation-delay: ${this.delay}s">${html}</div>`;
+                this.delay += 0.5;
+            }
+
+            addStepHTML(html) {
+                this.elements.stepsWrapper.innerHTML += html;
+            }
+
+            addResultBox(result) {
+                const resultHTML = `
+                    <div class="result-box" style="animation-delay: ${this.delay}s">
+                        <p>El resultado final es:</p>
+                        <span class="final-result">${result}</span>
+                    </div>
+                `;
+                this.addStepHTML(resultHTML);
+            }
+            
+            // Validaciones
+            isValid(value, base) {
+                const patterns = {
+                    'binary': /^[01]+$/,
+                    'octal': /^[0-7]+$/,
+                    'decimal': /^\d+$/,
+                    'hex': /^[0-9A-F]+$/
+                };
+                return patterns[base].test(value);
+            }
+            
+            getBaseNumber(base) {
+                const bases = { 'decimal': 10, 'binary': 2, 'octal': 8, 'hex': 16 };
+                return bases[base];
+            }
+        }
+
+        // Inicialización de la aplicación
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = {
+                sourceBase: document.getElementById('source-base'),
+                targetBase: document.getElementById('target-base'),
+                inputValue: document.getElementById('input-value'),
+                stepsWrapper: document.getElementById('steps-wrapper'),
+                vizTitle: document.getElementById('visualization-title')
+            };
+
+            const stateManager = new StateManager();
+            const visualizationManager = new VisualizationManager(elements, stateManager);
+            
+            visualizationManager.initialize();
+        });
+    </script>
+</body>
+</html>

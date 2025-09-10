@@ -6,7 +6,7 @@
     <title>Súper Conversor Académico de Sistemas Numéricos</title>
     
     <style>
-        /* --- 1. CSS: Variables y Estilos Generales --- */
+        /* --- CSS DEL CONVERSOR --- */
         :root {
             --color-bg-dark: #1a1a2e;
             --color-bg-card: #162447;
@@ -44,7 +44,6 @@
             gap: 25px;
         }
 
-        /* --- Encabezado --- */
         header {
             text-align: center;
             border-bottom: 2px solid var(--color-border);
@@ -62,7 +61,6 @@
             font-size: 1.1em;
         }
 
-        /* --- Tarjeta de Controles --- */
         .controls-card {
             background-color: var(--color-bg-card);
             border-radius: 12px;
@@ -116,7 +114,6 @@
             text-transform: uppercase;
         }
 
-        /* --- Contenedor de la Visualización --- */
         #visualization-container {
             background-color: var(--color-bg-card);
             border-radius: 12px;
@@ -133,7 +130,6 @@
             margin-bottom: 25px;
         }
         
-        /* --- Estilos de los Pasos --- */
         .step {
             font-size: 1.4em;
             padding: 15px;
@@ -228,12 +224,15 @@
             border: 1px solid var(--color-accent-orange);
         }
 
-        /* --- Pie de Página --- */
         footer {
             margin-top: 50px;
             text-align: center;
             font-size: 0.9em;
             color: var(--color-text-faded);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
         
         footer p {
@@ -245,13 +244,28 @@
             font-weight: bold;
         }
 
-        /* --- Animación --- */
+        .action-button {
+            padding: 12px 25px;
+            font-size: 1em;
+            font-weight: bold;
+            color: var(--color-bg-dark);
+            background-color: var(--color-accent-orange);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .action-button:hover {
+            background-color: #e4916a;
+            transform: translateY(-2px);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Media Queries para la Responsividad --- */
         @media (max-width: 768px) {
             .controls-card {
                 flex-direction: column;
@@ -279,6 +293,166 @@
             }
             .final-result {
                 font-size: 2em;
+            }
+        }
+
+        /* --- CSS DEL WIDGET DE PREVENCIÓN --- */
+        :root{
+            --sp-bg:#0b0b10;
+            --sp-card:#0f1720;
+            --sp-accent:#c98f7a;
+            --sp-muted:#bfbfbf;
+        }
+        .sp-overlay{
+            position:fixed;
+            inset:0;
+            background:rgba(3,6,10,0.65);
+            backdrop-filter:blur(4px);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:99999
+        }
+        .sp-card{
+            width:min(880px,92%);
+            max-width:980px;
+            background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(2,6,10,0.2));
+            border-radius:18px;
+            padding:26px;
+            box-shadow:0 10px 40px rgba(0,0,0,0.6);
+            display:grid;
+            grid-template-columns:1fr 340px;
+            gap:20px;
+            position:relative
+        }
+        .sp-card-close{
+            position:absolute;
+            top:12px;
+            right:12px;
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:24px;
+            color:var(--sp-muted);
+            line-height:1;
+            padding:8px;
+            border-radius:50%;
+            transition:background .2s
+        }
+        .sp-card-close:hover{
+            background:rgba(255,255,255,0.1)
+        }
+        .sp-left{
+            padding-right:20px;
+            border-right:1px solid rgba(255,255,255,0.05)
+        }
+        .sp-left-title{
+            font-size:28px;
+            font-weight:bold;
+            color:#fff;
+            margin-bottom:12px
+        }
+        .sp-left-subtitle{
+            font-size:18px;
+            color:var(--sp-accent);
+            margin-bottom:20px
+        }
+        .sp-left-text{
+            font-size:16px;
+            color:var(--sp-muted)
+        }
+        .sp-right{
+            display:flex;
+            flex-direction:column;
+            gap:20px
+        }
+        .sp-audio-box{
+            background:rgba(255,255,255,0.05);
+            border-radius:12px;
+            padding:16px;
+            display:flex;
+            flex-direction:column;
+            gap:10px
+        }
+        .sp-audio-play-btn{
+            background:var(--sp-accent);
+            color:var(--sp-bg);
+            border:none;
+            padding:12px 20px;
+            border-radius:8px;
+            font-weight:bold;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            justify-content:center;
+            transition:opacity .2s
+        }
+        .sp-audio-play-btn:hover{opacity:.8}
+        .sp-audio-controls-wrap{display:flex;align-items:center;gap:12px}
+        .sp-audio-controls-play{
+            background:none;
+            border:none;
+            cursor:pointer;
+            color:var(--sp-accent)
+        }
+        .sp-audio-controls-play svg{width:28px;height:28px}
+        .sp-audio-progress{
+            flex-grow:1;
+            height:6px;
+            background:rgba(255,255,255,0.2);
+            border-radius:3px;
+            cursor:pointer
+        }
+        .sp-audio-progress-bar{
+            height:100%;
+            background:var(--sp-accent);
+            border-radius:3px;
+            width:0
+        }
+        .sp-audio-time{font-size:12px;color:var(--sp-muted)}
+        .sp-resources{
+            display:flex;
+            flex-direction:column;
+            gap:8px
+        }
+        .sp-resources-title{
+            font-weight:bold;
+            color:#fff;
+            font-size:16px
+        }
+        .sp-resources-list{
+            display:flex;
+            flex-direction:column;
+            gap:4px
+        }
+        .sp-resources-list a{
+            color:var(--sp-muted);
+            text-decoration:none;
+            font-size:14px;
+            transition:color .2s
+        }
+        .sp-resources-list a:hover{
+            color:var(--sp-accent)
+        }
+        .sp-footer{
+            margin-top:auto;
+            font-size:12px;
+            color:var(--sp-muted);
+            text-align:center
+        }
+        .sp-footer span{color:var(--sp-accent)}
+        @media(max-width:680px){
+            .sp-card{
+                grid-template-columns:1fr;
+                padding:20px;
+                gap:25px
+            }
+            .sp-left{
+                padding-right:0;
+                border-right:none;
+                padding-bottom:20px;
+                border-bottom:1px solid rgba(255,255,255,0.05)
             }
         }
     </style>
@@ -327,11 +501,11 @@
         
         <footer>
             <p>Creado por <span>Lautaro Fernández</span> con asistencia de IA para ayudar a aprender.</p>
+            <button class="action-button" onclick="window._SP_WIDGET.create('body')">Mensaje de Prevención del Suicidio</button>
         </footer>
     </div>
 
     <script>
-        // Clase para gestionar el estado de la aplicación
         class StateManager {
             constructor() {
                 this.state = {
@@ -360,21 +534,15 @@
             }
         }
 
-        // Objeto que encapsula la lógica pura de conversión
         const ConversionLogic = {
-            // Conversión de cualquier base a decimal
             toDecimal(value, base) {
                 return parseInt(value, base);
             },
-
-            // Conversión de decimal a cualquier otra base
             fromDecimal(value, base) {
                 let result = '';
                 let tempValue = value;
                 const hexMap = '0123456789ABCDEF';
-
                 if (tempValue === 0) return '0';
-
                 while (tempValue > 0) {
                     const remainder = tempValue % base;
                     result = (base === 16 ? hexMap[remainder] : remainder) + result;
@@ -384,7 +552,6 @@
             }
         };
 
-        // Clase para gestionar la visualización y la interacción con el DOM
         class VisualizationManager {
             constructor(elements, stateManager) {
                 this.elements = elements;
@@ -453,7 +620,6 @@
             runVisualization(input, sourceBase, targetBase) {
                 let decimalValue;
 
-                // --- Conversión Binario <-> Octal/Hex (Método Directo)
                 if (sourceBase === 'binary' && (targetBase === 'octal' || targetBase === 'hex')) {
                     this.addExplanation(`<strong>Método directo:</strong> de ${sourceBase} a ${targetBase} sin pasar por decimal.`);
                     this.visualizeGrouping(input, targetBase);
@@ -461,11 +627,10 @@
                     this.addExplanation(`<strong>Método directo:</strong> de ${sourceBase} a ${targetBase} sin pasar por decimal.`);
                     this.visualizeUngrouping(input, sourceBase);
                 } 
-                // --- Conversión General a través de Decimal
                 else {
                     if (sourceBase !== 'decimal') {
                         this.addExplanation(`<strong>Paso 1:</strong> Convertir de ${sourceBase} a decimal.`);
-                        this.addExplanation(`<strong>Explicación del método:</strong> Para pasar un número de cualquier base a **decimal**, se utiliza la **Expresión Polinómica** o **método de las potencias**.  El valor de cada dígito se determina multiplicándolo por la base elevada a la potencia de su posición, empezando por la posición **0** de derecha a izquierda. Luego, se suman todos los resultados.`);
+                        this.addExplanation(`<strong>Explicación del método:</strong> Para pasar un número de cualquier base a **decimal**, se utiliza la **Expresión Polinómica** o **método de las potencias**. El valor de cada dígito se determina multiplicándolo por la base elevada a la potencia de su posición, empezando por la posición **0** de derecha a izquierda. Luego, se suman todos los resultados.`);
                         this.visualizeToDecimal(input, sourceBase);
                         decimalValue = this.conversionLogic.toDecimal(input, this.getBaseNumber(sourceBase));
                     } else {
@@ -483,29 +648,24 @@
                 this.addResultBox(finalResult);
             }
             
-            // Visualiza la conversión de cualquier base a decimal (método de las potencias)
             visualizeToDecimal(input, sourceBase) {
                 const baseNum = this.getBaseNumber(sourceBase);
                 const digits = input.split('').reverse();
                 let sum = 0;
-
                 this.addStepHTML(`
                     <div class="explanation">
                         <p>Fórmula: <strong>(dígito × base<sup>posición</sup>)</strong></p>
                     </div>
                 `);
-
                 digits.forEach((digit, index) => {
                     const value = parseInt(digit, baseNum);
                     const powerOfBase = Math.pow(baseNum, index);
                     const term = value * powerOfBase;
                     sum += term;
-                    
                     const stepText = `(${digit} × ${baseNum}<sup>${index}</sup>) = ${term}`;
                     this.addStepHTML(`<p class="step" style="animation-delay: ${this.delay}s">${stepText}</p>`);
                     this.delay += 0.4;
                 });
-                
                 const finalSumHTML = `
                     <div class="result-box" style="animation-delay: ${this.delay}s">
                         <p>La suma total es:</p>
@@ -516,16 +676,13 @@
                 this.delay += 0.5;
             }
 
-            // Visualiza la conversión de decimal a cualquier base (método de divisiones sucesivas)
             visualizeFromDecimal(number, targetBase) {
                 let currentNumber = number;
                 const base = this.getBaseNumber(targetBase);
-                
                 while (currentNumber > 0) {
                     const remainder = currentNumber % base;
                     const quotient = Math.floor(currentNumber / base);
                     const formattedRemainder = (base === 16 && remainder >= 10) ? this.hexMap[remainder] : remainder;
-                    
                     const stepHTML = `
                         <div class="step" style="animation-delay: ${this.delay}s">
                             <span class="number">${currentNumber}</span> ÷ ${base} = <span class="result-part">${quotient}</span>
@@ -533,14 +690,12 @@
                             <span class="remainder">${formattedRemainder}</span>
                         </div>
                     `;
-                    
                     this.addStepHTML(stepHTML);
                     currentNumber = quotient;
                     this.delay += 0.4;
                 }
             }
             
-            // Visualiza el método de agrupamiento (Binario a Octal/Hex)
             visualizeGrouping(input, targetBase) {
                 const groupSize = (targetBase === 'octal') ? 3 : 4;
                 let paddedInput = input;
@@ -548,13 +703,11 @@
                     const padLength = groupSize - (paddedInput.length % groupSize);
                     paddedInput = '0'.repeat(padLength) + paddedInput;
                 }
-
                 const groups = [];
                 for (let i = 0; i < paddedInput.length; i += groupSize) {
                     const group = paddedInput.substring(i, i + groupSize);
                     groups.push(group);
                 }
-
                 this.addExplanation(`**Explicación:** Se agrupan los dígitos del número binario de derecha a izquierda en grupos de ${groupSize} bits. Si el último grupo a la izquierda no está completo, se le añaden ceros a la izquierda. Luego, cada grupo se convierte a su dígito equivalente en la base de destino.`);
                 this.addStepHTML(`<p class="grouping-step" style="animation-delay: ${this.delay}s">Binario: ${groups.join(' ')}</p>`);
                 this.delay += 0.5;
@@ -567,7 +720,6 @@
                 });
             }
             
-            // Visualiza el método de desagrupamiento (Octal/Hex a Binario)
             visualizeUngrouping(input, sourceBase) {
                 const groupSize = (sourceBase === 'octal') ? 3 : 4;
                 this.addExplanation(`**Explicación:** Se toma cada dígito del número de origen y se convierte a su equivalente en ${groupSize} bits binarios. Los ceros a la izquierda deben incluirse para asegurar que cada dígito octal o hexadecimal se represente con la cantidad correcta de bits.`);
@@ -601,7 +753,6 @@
                 this.delay += 0.5;
             }
 
-            // Métodos auxiliares para la visualización
             addExplanation(html) {
                 this.elements.stepsWrapper.innerHTML += `<div class="explanation" style="animation-delay: ${this.delay}s">${html}</div>`;
                 this.delay += 0.5;
@@ -621,7 +772,6 @@
                 this.addStepHTML(resultHTML);
             }
             
-            // Validaciones
             isValid(value, base) {
                 if (value === '') return true;
                 const patterns = {
@@ -639,7 +789,6 @@
             }
         }
 
-        // Inicialización de la aplicación
         document.addEventListener('DOMContentLoaded', () => {
             const elements = {
                 sourceBase: document.getElementById('source-base'),
@@ -655,5 +804,101 @@
             visualizationManager.initialize();
         });
     </script>
+    
+    <script>
+        (function(){
+            function createSuicidePreventionWidget(target, options = {}) {
+                const isMobile = window.innerWidth <= 768;
+                
+                const customText = `
+                    <h2 class="sp-left-title">A veces la vida duele más de lo que creemos soportar, y es normal sentirse perdido. Pero aunque las sombras parezcan eternas, tu existencia tiene un valor que nadie más puede reemplazar.</h2>
+                    <p class="sp-left-subtitle">Recordá que pedir ayuda no es un signo de debilidad, sino un acto de coraje. Hay personas dispuestas a escucharte, a acompañarte y a cuidarte, incluso cuando parece que nadie está ahí.</p>
+                    <p class="sp-left-text">Tu historia no terminó, y cada día que respirás es una oportunidad de seguir creando momentos que, aunque parezcan pequeños, pueden convertirse en luz para vos y para quienes te rodean. No estás solo.</p>
+                `;
+                
+                const audioUrl = "https://ia801300.us.archive.org/12/items/c-418-mice-on-venus-minecraft-volume-alpha_202509/C418%20-%20Mice%20on%20Venus%20-%20Minecraft%20Volume%20Alpha.mp3";
+                
+                const resources = options.resources || [
+                    { name: 'Línea de Vida (Argentina)', url: 'tel:+541152751135' },
+                    { name: 'Ayuda en la Ciudad de Buenos Aires', url: 'tel:+541147040476' },
+                    { name: 'Red de Salud Mental Pública (CABA)', url: 'https://www.buenosaires.gob.ar/salud/salud-mental' },
+                ];
+                
+                const resourcesHtml = resources.map(res => `
+                    <a href="${res.url}" target="_blank" rel="noopener noreferrer">
+                        ${res.name}
+                    </a>
+                `).join('');
+
+                const overlay = document.createElement('div');
+                overlay.className = 'sp-overlay';
+
+                const card = document.createElement('div');
+                card.className = 'sp-card';
+
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'sp-card-close';
+                closeBtn.innerHTML = '&times;';
+                closeBtn.onclick = () => {
+                    if (document.body.contains(overlay)) {
+                        document.body.removeChild(overlay);
+                    }
+                };
+
+                const left = document.createElement('div');
+                left.className = 'sp-left';
+                left.innerHTML = customText;
+
+                const right = document.createElement('div');
+                right.className = 'sp-right';
+
+                const audioBox = document.createElement('div');
+                audioBox.className = 'sp-audio-box';
+                const audio = new Audio(audioUrl);
+                const playBtn = document.createElement('button');
+                playBtn.className = 'sp-audio-play-btn';
+                playBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Reproducir audio`;
+                playBtn.onclick = () => {
+                    audio.play();
+                };
+
+                const resourcesEl = document.createElement('div');
+                resourcesEl.className = 'sp-resources';
+                resourcesEl.innerHTML = `<h3 class="sp-resources-title">Recursos de ayuda</h3><div class="sp-resources-list">${resourcesHtml}</div>`;
+                
+                const footer = document.createElement('div');
+                footer.className = 'sp-footer';
+                footer.innerHTML = `<span>Un mensaje de ayuda en el Día Mundial de Prevención del Suicidio.</span>`;
+
+                audioBox.appendChild(audio);
+                audioBox.appendChild(playBtn);
+                right.appendChild(audioBox);
+                right.appendChild(resourcesEl);
+                right.appendChild(footer);
+
+                card.appendChild(closeBtn);
+                card.appendChild(left);
+                card.appendChild(right);
+
+                overlay.appendChild(card);
+                document.body.appendChild(overlay);
+
+                return {
+                    close: () => {
+                        if (document.body.contains(overlay)) {
+                            document.body.removeChild(overlay);
+                        }
+                    },
+                    audioElement: audio,
+                    element: overlay
+                };
+            }
+
+            if (!window._SP_WIDGET) window._SP_WIDGET = {};
+            window._SP_WIDGET.create = createSuicidePreventionWidget;
+            window.createSuicidePreventionWidget = createSuicidePreventionWidget;
+        })();
+    </script>
+    
 </body>
 </html>

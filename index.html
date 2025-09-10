@@ -454,6 +454,9 @@
                 padding-bottom:20px;
                 border-bottom:1px solid rgba(255,255,255,0.05)
             }
+            .sp-left-title { font-size: 24px; }
+            .sp-left-subtitle { font-size: 16px; }
+            .sp-left-text { font-size: 14px; }
         }
     </style>
 </head>
@@ -808,7 +811,7 @@
     <script>
         (function(){
             function createSuicidePreventionWidget(target, options = {}) {
-                const isMobile = window.innerWidth <= 768;
+                const isMobile = window.innerWidth <= 680;
                 
                 const customText = `
                     <h2 class="sp-left-title">A veces la vida duele más de lo que creemos soportar, y es normal sentirse perdido. Pero aunque las sombras parezcan eternas, tu existencia tiene un valor que nadie más puede reemplazar.</h2>

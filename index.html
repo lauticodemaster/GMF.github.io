@@ -731,7 +731,7 @@
                 groups.forEach(group => {
                     const decimalValue = parseInt(group, 2);
                     let convertedValue = decimalValue.toString(this.getBaseNumber(targetBase)).toUpperCase();
-                    this.addStepHTML(`<div class="grouping-step" style="animation-delay: ${this.delay}s"><span class="group">${group}</span> = <span class="result-part">${convertedValue}</span></div>`);
+                    this.addStepHTML(`<div class="grouping-step" style="animation-delay: ${this.delay}s"><span class="group">${group}</span> = <span class="result-part">${binaryValue}</span></div>`);
                     this.delay += 0.4;
                 });
             }
